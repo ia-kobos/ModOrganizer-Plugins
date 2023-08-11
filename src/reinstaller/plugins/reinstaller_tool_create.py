@@ -31,10 +31,10 @@ class ReinstallerCreateTool(ReinstallerPlugin, mobase.IPluginTool):
         return self.icons.plusIcon()
         
     def name(self):
-        return self.baseName() + " Create Tool"
+        return f"{self.baseName()} Create Tool"
 
     def displayName(self):
-        return self.baseDisplayName() + "/Create"
+        return f"{self.baseDisplayName()}/Create"
 
     def description(self):
         return self.__tr("Creates a new installer from a downloaded file.")

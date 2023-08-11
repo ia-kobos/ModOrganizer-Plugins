@@ -121,12 +121,11 @@ class RootBuilderCopy():
 
     def getModData(self):
         """ Gets a dictionary of existing mod files with their hashes. """
-        fileData = {}
-        # If we have already run a build, just load the data from that.
-        if (self.paths.rootModDataFilePath().exists()):
-            fileData = json.load(open(self.paths.rootModDataFilePath()))
-
-        return fileData
+        return (
+            json.load(open(self.paths.rootModDataFilePath()))
+            if (self.paths.rootModDataFilePath().exists())
+            else {}
+        )
 
     def saveModData(self, fileData=dict):
         """ Saves current mod data. """

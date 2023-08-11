@@ -18,17 +18,17 @@ class CurationClubFiles(SharedFiles):
 
     def creationMetaFiles(self):
         metaFiles = []
-        qInfo("Searching " + str(self.paths.creationsMetaFolder()))
+        qInfo(f"Searching {str(self.paths.creationsMetaFolder())}")
         if self.paths.creationsMetaFolder().exists():
-            metaFiles = metaFiles + self.getFolderFileList(str(self.paths.creationsMetaFolder()))
+            metaFiles += self.getFolderFileList(str(self.paths.creationsMetaFolder()))
         if self.settings.rootBuilderSupport():
             modlist = self.organiser.modList().allModsByProfilePriority()
             for mod in modlist:
                 if self.organiser.modList().state(mod) & mobase.ModState.ACTIVE:
-                    qInfo("Searching " + str(self.paths.creationsRootFolder(mod)))
+                    qInfo(f"Searching {str(self.paths.creationsRootFolder(mod))}")
                     if self.paths.creationsRootFolder(mod).exists():
                         metaFiles = metaFiles + self.getFolderFileList(str(self.paths.creationsRootFolder(mod)))
-            qInfo("Searching " + str(self.paths.creationsOverwriteFolder()))
+            qInfo(f"Searching {str(self.paths.creationsOverwriteFolder())}")
             if Path(self.paths.creationsOverwriteFolder()).exists():
                 metaFiles = metaFiles + self.getFolderFileList(str(self.paths.creationsOverwriteFolder()))
         return metaFiles

@@ -28,7 +28,7 @@ class RootBuilderLinker():
             # If the linkable file is already in the game folder, rename it.
             if gamePath.exists():
                 #qInfo("Renaming for link " + str(gamePath))
-                self.utilities.moveTo(gamePath, Path(str(gamePath) + ".rbackup"))
+                self.utilities.moveTo(gamePath, Path(f"{str(gamePath)}.rbackup"))
             # Create the dirs if they don't exist.
             if not gamePath.parent.exists():
                 os.makedirs(gamePath.parent)
@@ -44,17 +44,18 @@ class RootBuilderLinker():
     def clear(self):
         """ Clears any created links from mod files """
         # Check if we have any link data and load it if we do.
-        if self.paths.rootLinkDataFilePath().exists():
-            linkFileData = json.load(open(self.paths.rootLinkDataFilePath()))
+        if not self.paths.rootLinkDataFilePath().exists():
+            return
+        linkFileData = json.load(open(self.paths.rootLinkDataFilePath()))
             # Loop through our link data and unlink individual files.
-            for file in linkFileData:
-                relativePath = self.paths.rootRelativePath(file)
-                gamePath = self.paths.gamePath() / relativePath
-                if gamePath.exists():
-                    #qInfo("Removing link for " + str(gamePath))
-                    gamePath.unlink(True)
-                if Path(str(gamePath) + ".rbackup").exists():
+        for file in linkFileData:
+            relativePath = self.paths.rootRelativePath(file)
+            gamePath = self.paths.gamePath() / relativePath
+            if gamePath.exists():
+                #qInfo("Removing link for " + str(gamePath))
+                gamePath.unlink(True)
+            if Path(f"{str(gamePath)}.rbackup").exists():
                     #qInfo("Renaming from link " + str(gamePath))
-                    self.utilities.moveTo(Path(str(gamePath) + ".rbackup"), gamePath)
-            # Remove our link data file.
-            self.utilities.deletePath(self.paths.rootLinkDataFilePath())
+                self.utilities.moveTo(Path(f"{str(gamePath)}.rbackup"), gamePath)
+        # Remove our link data file.
+        self.utilities.deletePath(self.paths.rootLinkDataFilePath())

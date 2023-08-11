@@ -44,15 +44,13 @@ class ReinstallerManageTool(ReinstallerPlugin, mobase.IPluginTool):
         return self.icons.recycleIcon()
 
     def addFileTextChanged(self):
-        value = self.addFileText.text().strip()
-        if value:
+        if value := self.addFileText.text().strip():
             self.addButton.setEnabled(True)
         else:
             self.addButton.setEnabled(False)
 
     def addFileSelectChanged(self):
-        value = self.addFileSelect.currentText()
-        if value:
+        if value := self.addFileSelect.currentText():
             self.addFileText.setEnabled(True)
             self.addButton.setEnabled(True)
             self.addFileText.setText(self.reinstaller.files.getDownloadFileName(value))

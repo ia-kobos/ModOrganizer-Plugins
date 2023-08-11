@@ -595,7 +595,7 @@ class RootBuilderManageTool(RootBuilderPlugin, mobase.IPluginTool):
         return self.icons.linkAltIcon()
 
     def name(self):
-        return self.baseName() + " Manager Tool"
+        return f"{self.baseName()} Manager Tool"
 
     def displayName(self):
         return self.baseDisplayName()

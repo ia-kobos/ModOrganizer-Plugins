@@ -25,10 +25,10 @@ class RootBuilderClearTool(RootBuilderPlugin, mobase.IPluginTool):
         return self.icons.minusIcon()
 
     def name(self):
-        return self.baseName() + " Clear Tool"
+        return f"{self.baseName()} Clear Tool"
 
     def displayName(self):
-        return self.baseDisplayName() + "/Clear"
+        return f"{self.baseDisplayName()}/Clear"
 
     def description(self):
         return self.__tr("Runs a clear operation using current settings.")

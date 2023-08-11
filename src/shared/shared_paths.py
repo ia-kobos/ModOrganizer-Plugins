@@ -17,9 +17,7 @@ class SharedPaths():
         """ Gets the current game version string. """
         if self._version == str():
             self._version = self.organiser.managedGame().gameVersion()
-        if self._version == str():
-            return "Unknown"
-        return self._version
+        return "Unknown" if self._version == str() else self._version
 
     _gamePath = str()
     def gamePath(self):
@@ -96,8 +94,7 @@ class SharedPaths():
         try:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Software\\Mod Organizer Team\\Mod Organizer") as key:
                 value = winreg.QueryValueEx(key, "CurrentInstance")
-                result = str(value[0].replace("/", "\\"))
-                return result
+                return str(value[0].replace("/", "\\"))
         except:
             return ""
 
@@ -124,10 +121,7 @@ class SharedPaths():
                         names[appId] = part[1]
                     if part[0] == "binary":
                         paths[appId] = part[1]
-        res = {}
-        for appId in names.keys():
-            res[names[appId]] = paths[appId]
-        return res
+        return {names[appId]: paths[appId] for appId in names}
 
     def modOrganizerProfile(self):
         """ Gets the name of the current profile. """

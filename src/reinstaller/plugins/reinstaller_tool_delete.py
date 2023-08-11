@@ -31,33 +31,25 @@ class ReinstallerDeleteTool(ReinstallerPlugin, mobase.IPluginTool):
         return self.icons.minusIcon()
         
     def name(self):
-        return self.baseName() + " Delete Tool"
+        return f"{self.baseName()} Delete Tool"
 
     def displayName(self):
-        return self.baseDisplayName() + "/Delete"
+        return f"{self.baseDisplayName()}/Delete"
 
     def description(self):
         return self.__tr("Deletes a downloaded file.")
 
     def display(self):
         installers = self.reinstaller.files.getSubFolderList(self.reinstaller.paths.pluginDataPath())
-        names = []
-        for folder in installers:
-            names.append(os.path.basename(folder))
-
+        names = [os.path.basename(folder) for folder in installers]
         item, ok = QInputDialog.getItem(self.dialog, "Delete Installer", "Installer:", names, 0, False)
         if ok and item:
             installerOpts = self.reinstaller.files.getFolderFileList(self.reinstaller.paths.pluginDataPath() / item)
-            files = []
-            for file in installerOpts:
-                if not str(file).endswith('.meta'):
-                    files.append(file)
+            files = [file for file in installerOpts if not str(file).endswith('.meta')]
             if len(files) == 1:
                 self.reinstaller.delete(item, os.path.basename(files[0]))
             if (len(files)) > 1:
-                optionFiles = []
-                for opt in files:
-                    optionFiles.append(os.path.basename(opt))
+                optionFiles = [os.path.basename(opt) for opt in files]
                 item2, ok = QInputDialog.getItem(self.dialog, "Delete File", "File:", optionFiles, 0, False)
                 if ok and item2:
                     self.reinstaller.delete(item, item2)

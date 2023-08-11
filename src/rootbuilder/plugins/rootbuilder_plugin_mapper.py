@@ -79,8 +79,10 @@ class RootBuilderMapperPlugin(RootBuilderPlugin, mobase.IPluginFileMapper):
 
     def updateWarning(self):
         """ Obsolete. the fix effectively just runs, but the restore doesn't happen until the user clears and your backup/cache aren't cleared as a result. The bug only occurs if the game is actually updated while a build is still present, aka, almost never. """
-        warnMsg = "<p>Your game has been updated since Root Builder last cleared. This can cause problems.</p>"
-        warnMsg += "<p>Clicking OK will run Root Builder's update fix, which will do the following;</p>"
+        warnMsg = (
+            "<p>Your game has been updated since Root Builder last cleared. This can cause problems.</p>"
+            + "<p>Clicking OK will run Root Builder's update fix, which will do the following;</p>"
+        )
         warnMsg += "<ul>"
         warnMsg += "<li>Run a clear, restoring your game to the last version that Root Builder backed up. <b>You will need to exit Mod Organizer and re-update your game to the latest version before running a build.</b></li>"
         warnMsg += "<li>Changes since your last build, including files from the game updating, will be moved to your overwrite folder. <b>It is suggested that you clear overwrite to avoid unwanted side effects.</b></li>"

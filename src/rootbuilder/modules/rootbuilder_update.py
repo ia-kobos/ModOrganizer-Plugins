@@ -43,47 +43,46 @@ class RootBuilderUpdate():
         versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
         versionFolders.remove(currentPath)
 
-        # If there is at least one past version of the game, it might need a fix.
-        if len(versionFolders) > 0:
-            hasBug = False
-            # If either of the build data files are present, then we've got a bug.
-            for folder in versionFolders:
-                if Path(folder / "RootBuilderModData.json").exists():
-                    hasBug = True
-                if Path(folder / "RootBuilderLinkData.json").exists():
-                    hasBug = True
-                if Path(folder / "RootBuilderBackupData.json").exists():
-                    hasBug = True
-            return hasBug
-        else:
+        if len(versionFolders) <= 0:
             return False
+        hasBug = False
+        # If either of the build data files are present, then we've got a bug.
+        for folder in versionFolders:
+            if Path(folder / "RootBuilderModData.json").exists():
+                hasBug = True
+            if Path(folder / "RootBuilderLinkData.json").exists():
+                hasBug = True
+            if Path(folder / "RootBuilderBackupData.json").exists():
+                hasBug = True
+        return hasBug
     
     def fixGameUpdateBug(self):
         """ Moves files to try and resolve the game update bug. """
-        if self.hasGameUpdateBug():
-            legacyPath = self.paths.rootBuilderLegacyGameDataPath()
-            currentPath = self.paths.rootBuilderGameDataPath()
-            versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
-            versionFolders.remove(currentPath)
-            # If there is at least one past version of the game, it might need a fix.
-            if len(versionFolders) > 0:
-                # Get the current and previous version folders.
-                foundBug = False
-                for folder in versionFolders:
-                    if not foundBug:
-                        if Path(folder / "RootBuilderModData.json").exists():
-                            self.utilities.moveTo(str(folder / "RootBuilderModData.json"), str(self.paths.rootModDataFilePath()))
-                            foundBug = True
-                        if Path(folder / "RootBuilderLinkData.json").exists():
-                            self.utilities.moveTo(str(folder / "RootBuilderLinkData.json"), str(self.paths.rootLinkDataFilePath()))
-                            foundBug = True
-                        if Path(folder / "RootBuilderBackupData.json").exists():
-                            self.utilities.moveTo(str(folder / "RootBuilderBackupData.json"), str(self.paths.rootBackupDataFilePath()))
-                            foundBug = True
-                        if foundBug and Path(folder / "RootBuilderCacheData.json").exists():
-                            self.utilities.copyTo(str(folder / "RootBuilderCacheData.json"), str(self.paths.rootCacheFilePath()))
-                        if foundBug and Path(folder / "backup").exists():
-                            self.utilities.replaceDir(str(folder / "backup"), str(self.paths.rootBackupPath()))
+        if not self.hasGameUpdateBug():
+            return
+        legacyPath = self.paths.rootBuilderLegacyGameDataPath()
+        currentPath = self.paths.rootBuilderGameDataPath()
+        versionFolders = sorted(self.files.getSubFolderList(legacyPath, False), reverse=True)
+        versionFolders.remove(currentPath)
+        # If there is at least one past version of the game, it might need a fix.
+        if len(versionFolders) > 0:
+            # Get the current and previous version folders.
+            foundBug = False
+            for folder in versionFolders:
+                if not foundBug:
+                    if Path(folder / "RootBuilderModData.json").exists():
+                        self.utilities.moveTo(str(folder / "RootBuilderModData.json"), str(self.paths.rootModDataFilePath()))
+                        foundBug = True
+                    if Path(folder / "RootBuilderLinkData.json").exists():
+                        self.utilities.moveTo(str(folder / "RootBuilderLinkData.json"), str(self.paths.rootLinkDataFilePath()))
+                        foundBug = True
+                    if Path(folder / "RootBuilderBackupData.json").exists():
+                        self.utilities.moveTo(str(folder / "RootBuilderBackupData.json"), str(self.paths.rootBackupDataFilePath()))
+                        foundBug = True
+                    if foundBug and Path(folder / "RootBuilderCacheData.json").exists():
+                        self.utilities.copyTo(str(folder / "RootBuilderCacheData.json"), str(self.paths.rootCacheFilePath()))
+                    if foundBug and Path(folder / "backup").exists():
+                        self.utilities.replaceDir(str(folder / "backup"), str(self.paths.rootBackupPath()))
 
             
 

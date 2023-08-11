@@ -33,7 +33,7 @@ class RootBuilder():
         self.updater.fixGameUpdateBug()
 
     def build(self):
-        qInfo("Running for version " + self.backup.paths.gameVersion())
+        qInfo(f"Running for version {self.backup.paths.gameVersion()}")
         self.updateFix()
 
         qInfo("RootBuilder: Starting build.")
@@ -54,7 +54,7 @@ class RootBuilder():
         qInfo("RootBuilder: Build complete.")
 
     def sync(self):
-        qInfo("Running for version " + self.backup.paths.gameVersion())
+        qInfo(f"Running for version {self.backup.paths.gameVersion()}")
         self.updateFix()
 
         qInfo("RootBuilder: Starting sync.")
@@ -63,7 +63,7 @@ class RootBuilder():
         return
 
     def clear(self):
-        qInfo("Running for version " + self.backup.paths.gameVersion())
+        qInfo(f"Running for version {self.backup.paths.gameVersion()}")
         self.updateFix()
 
         qInfo("RootBuilder: Starting clear.")
@@ -79,7 +79,7 @@ class RootBuilder():
         qInfo("RootBuilder: Restoring game files.")
         self.backup.restore()
         qInfo("RootBuilder: Game files restored.")
-        
+
         qInfo("RootBuilder: Cleaning up overwrite.")
         self.mapper.cleanup()
         qInfo("RootBuilder: Overwrite cleaned.")

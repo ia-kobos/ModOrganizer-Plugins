@@ -24,7 +24,10 @@ class ProfileSyncPaths(SharedPaths):
             self._profileSyncModlistFolder = self.pluginDataPath() / self.safeGamePathName() / "groups"
         if not Path(self._profileSyncModlistFolder).exists():
             os.makedirs(str(self._profileSyncModlistFolder))
-        return Path(self._profileSyncModlistFolder) / (self.fileSafeName(str(groupName)) + ".txt")
+        return (
+            Path(self._profileSyncModlistFolder)
+            / f"{self.fileSafeName(str(groupName))}.txt"
+        )
 
     def profileModlistPath(self, profile=str):
         return self.modOrganizerProfilesPath() / profile / "modlist.txt"

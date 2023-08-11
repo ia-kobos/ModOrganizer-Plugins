@@ -13,8 +13,7 @@ class CurationClubPlugin(SharedPlugin):
 
     def init(self, organiser=mobase.IOrganizer):
         self.curationclub = CurationClub(organiser)
-        res = super().init(organiser)
-        return res
+        return super().init(organiser)
 
     def __tr(self, trstr):
         return QCoreApplication.translate(self.pluginName, trstr)

@@ -20,15 +20,13 @@ class Shortcutter():
 
     def create(self, label=str, profile=str, app=str, instance=str, icon=str):
         moPath = str(self.paths.modOrganizerExePath())
-        args = ""
-        if instance != "":
-            args = '-i ""' + str(instance) + '""'
-        args += ' -p ""' + str(profile) + '"" ""' + str(app) + '""'
+        args = f'-i ""{str(instance)}""' if instance != "" else ""
+        args += f' -p ""{str(profile)}"" ""{str(app)}""'
         self.createShortcut(label, moPath, icon, args)
 
     def createShortcut(self, label=str, url=str, icon=str, args=str):
         qInfo("Generating desktop shortcut.")
         scBat = str(Path(__file__).parent.joinpath("shortcutter.bat"))
         scGen = f'"{scBat}" "{label}" "{url}" "{icon}" "{args}" > shortcutter_log.txt'
-        qInfo("Executing command " + str(scGen))
+        qInfo(f"Executing command {str(scGen)}")
         subprocess.call(scGen, shell=True, stdout=open(os.devnull, 'wb'))

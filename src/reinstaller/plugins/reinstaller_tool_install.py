@@ -31,10 +31,10 @@ class ReinstallerInstallTool(ReinstallerPlugin, mobase.IPluginTool):
         return self.icons.checkIcon()
         
     def name(self):
-        return self.baseName() + " Install Tool"
+        return f"{self.baseName()} Install Tool"
 
     def displayName(self):
-        return self.baseDisplayName() + "/Install"
+        return f"{self.baseDisplayName()}/Install"
 
     def description(self):
         return self.__tr("Runs an installer from a backed up file.")

@@ -21,8 +21,7 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
         super().__init__()
 
     def init(self, organiser=mobase.IOrganizer):
-        res = super().init(organiser)
-        return res
+        return super().init(organiser)
     
     def description(self):
         return self.__tr("Allows automatic install for Root mods.")
@@ -37,10 +36,10 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
         return []
 
     def name(self):
-        return self.baseName() + " Installer Plugin"
+        return f"{self.baseName()} Installer Plugin"
 
     def displayName(self):
-        return self.baseDisplayName() + " Installer"
+        return f"{self.baseDisplayName()} Installer"
 
     _installerPathToData = str()
     def findInstallerPathToData(self, path: str, entry: mobase.FileTreeEntry):
@@ -58,7 +57,7 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
             if en.lower() == f.lower():
                 return mobase.IFileTree.SKIP
         for e in self.minRootTypes():
-            if en.lower().endswith("." + e.lower()):
+            if en.lower().endswith(f".{e.lower()}"):
                 self._installerHasValidFiles = True
                 return mobase.IFileTree.STOP
         return mobase.IFileTree.CONTINUE
@@ -88,14 +87,14 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
             if en.lower() == f.lower():
                 return mobase.IFileTree.SKIP
         for e in self.minRootTypes():
-            if en.lower().endswith("." + e.lower()):
-                p = str(path)
-                #qInfo("Path: " + p)
-                #qInfo("Curr: " + self._installerValidFilePath)
-                pl = len(p.split("\\"))
+            if en.lower().endswith(f".{e.lower()}"):
+                p = path
                 cl = len(self._installerValidFilePath.split("\\"))
                 #qInfo("PL:" + str(pl) + "CL:" + str(cl))
                 if p != self._installerValidFilePath:
+                    #qInfo("Path: " + p)
+                    #qInfo("Curr: " + self._installerValidFilePath)
+                    pl = len(p.split("\\"))
                     if not self._first and pl == cl:
                         self._sameLevelPaths = True
                     if self._first or pl < cl:
@@ -108,7 +107,7 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
     _hasBaseExtensions = False
     def findBaseExtensions(self, path: str, entry: mobase.FileTreeEntry):
         for f in self.dataDirExtensions():
-            if entry.name().lower().endswith("." + f):
+            if entry.name().lower().endswith(f".{f}"):
                 self._hasBaseExtensions = True
         return mobase.IFileTree.SKIP
 
@@ -117,16 +116,14 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
             return False
 
         for f in self.dataDirPaths():
-            ft = tree.find(f)
-            if ft:
+            if ft := tree.find(f):
                 return False
 
         # Search for a 'known' folder, if it exists, this is almost certainly a root mod.
         for f in self.knownRootFiles():
-            ft = tree.find(f)
-            if ft:
+            if ft := tree.find(f):
                 return True
-            
+
         # Search for a Data folder. if there is one, this path to this folder is the Root path, otherwise the base itself is the root path.
         self._installerPathToData = str()
         tree.walk(self.findInstallerPathToData)
@@ -142,7 +139,7 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
             rootTree.walk(self.findBaseExtensions)
             if self._hasBaseExtensions:
                 return False
-        
+
         if rootTree:
             # Check the Data folder path, minus the data folder and any exclusions. If a valid file type exists anywhere in the tree, it's probably a root mod.
             self._installerHasValidFiles = False
@@ -152,7 +149,7 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
                 tree.walk(self.findInstallerValidPath)
                 if not self._sameLevelPaths:
                     return True
-                
+
         return False
 
     def isManualInstaller(self) -> bool: #required
@@ -170,67 +167,58 @@ class RootBuilderInstallPlugin(RootBuilderPlugin, mobase.IPluginInstallerSimple)
         res = self.dialog.exec()
         #qInfo(str(res))
         if res == QtWidgets.QDialog.Rejected:
-            if self._manualRequest:
-                self._manualRequest = False
-                return mobase.InstallResult.MANUAL_REQUESTED
-            else:
+            if not self._manualRequest:
                 return mobase.InstallResult.CANCELED
 
-        if res == QtWidgets.QDialog.Accepted:
-            # Get the data folder for the mod. Create a Data folder at the top level otherwise.
-            self._installerPathToData = str()
-            tree.walk(self.findInstallerPathToData)
-            dataTree = tree
-            dataPath = ""
-            if self._installerPathToData != str():
-                qInfo("Found data folder.")
-                dataTree = tree.find(str(Path(self._installerPathToData) / self.rootBuilder.paths.gameDataDir()))
-            else:
-                dataTree = tree.addDirectory(self.rootBuilder.paths.gameDataDir())
-            dataPath = str(dataTree.path())
-            #qInfo("Data path location: " + str(dataPath))
+            self._manualRequest = False
+            return mobase.InstallResult.MANUAL_REQUESTED
+        if res != QtWidgets.QDialog.Accepted:
+            return mobase.InstallResult.CANCELED
+        # Get the data folder for the mod. Create a Data folder at the top level otherwise.
+        self._installerPathToData = str()
+        tree.walk(self.findInstallerPathToData)
+        dataTree = tree
+        dataPath = ""
+        if self._installerPathToData != str():
+            qInfo("Found data folder.")
+            dataTree = tree.find(str(Path(self._installerPathToData) / self.rootBuilder.paths.gameDataDir()))
+        else:
+            dataTree = tree.addDirectory(self.rootBuilder.paths.gameDataDir())
+        dataPath = str(dataTree.path())
+        #qInfo("Data path location: " + str(dataPath))
 
-            # Find the root level folder in the mod.
-            rootLevel = None
+        # Find the root level folder in the mod.
+        rootLevel = None
 
             # If it's a known mod, just use the map to save time.
-            for f in self.knownRootFiles():
-                #qInfo("Checking for known file: " + str(f))
-                ft = tree.find(f)
-                if ft:
-                    #qInfo("Found known file: " + str(f))
-                    rp = self.knownRootMaps()[str(f)]
-                    if rp == "":
-                        rootLevel = tree
-                    else:
-                        rootLevel = tree.find(rp)
-
+        for f in self.knownRootFiles():
+            if ft := tree.find(f):
+                #qInfo("Found known file: " + str(f))
+                rp = self.knownRootMaps()[str(f)]
+                rootLevel = tree if rp == "" else tree.find(rp)
             # If it's not known, find wherever the valid root file was and set that as the root level.
-            if rootLevel == None:
-                self._installerValidFilePath = str()
-                self._first = True
-                tree.walk(self.findInstallerValidPath)
-                if self._installerValidFilePath != str():
-                    rootLevel = tree.find(self._installerValidFilePath)
-                else: 
-                    rootLevel = tree
+        if rootLevel is None:
+            self._installerValidFilePath = str()
+            self._first = True
+            tree.walk(self.findInstallerValidPath)
+            rootLevel = (
+                tree.find(self._installerValidFilePath)
+                if self._installerValidFilePath != str()
+                else tree
+            )
+        self._rootLevelPath = rootLevel.path()
+        #qInfo("Root Level: " + str(self._rootLevelPath))
 
-            self._rootLevelPath = rootLevel.path()
-            #qInfo("Root Level: " + str(self._rootLevelPath))
+        # Find all the valid entries to copy across.
+        self._installableFiles = []
+        tree.walk(self.findInstallableFiles)
+        for f in self._installableFiles:
+            #qInfo("Moving " + f.path() + " entry " + f.name() + " to " + dataPath + "\\Root\\")
+            if not tree.move(f, dataPath + "\\Root\\"):
+                qInfo("Move failed.")
 
-            # Find all the valid entries to copy across.
-            self._installableFiles = []
-            tree.walk(self.findInstallableFiles)
-            for f in self._installableFiles:
-                #qInfo("Moving " + f.path() + " entry " + f.name() + " to " + dataPath + "\\Root\\")
-                if not tree.move(f, dataPath + "\\Root\\"):
-                    qInfo("Move failed.")
-
-            # Get the data folder as the tree and return it.
-            return tree.find(dataPath)
-        
-        else:
-            return mobase.InstallResult.CANCELED
+        # Get the data folder as the tree and return it.
+        return tree.find(dataPath)
 
     def knownRootFiles(self):
         return self.knownRootMaps().keys()
