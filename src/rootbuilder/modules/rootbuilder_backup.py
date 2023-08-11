@@ -132,14 +132,11 @@ class RootBuilderBackup():
         fileData = {}
         # If we have a cache file for this game already load that.
         if (self.settings.cache() and self.paths.rootCacheFilePath().exists()):
-            fileData = json.load(open(self.paths.rootCacheFilePath()))
-        # If we have already run a build, just load the data from that.
+            return json.load(open(self.paths.rootCacheFilePath()))
         elif (self.paths.rootBackupDataFilePath().exists()):
-            fileData = json.load(open(self.paths.rootBackupDataFilePath()))
-        # Hash the base game files.
+            return json.load(open(self.paths.rootBackupDataFilePath()))
         else:
-            fileData = self.buildCache()
-        return fileData
+            return self.buildCache()
 
     def saveFileData(self, fileData=dict):
         """ Saves current file data to the backup data path """
@@ -169,7 +166,7 @@ class RootBuilderBackup():
         """ Triggers a cache build if none exists """
         fileData = {}
         for file in self.files.getGameFileList():
-            fileData.update({str(file):str(self.utilities.hashFile(file))})
+            fileData[str(file)] = str(self.utilities.hashFile(file))
             # If cache is enabled, save the data to cache.
             if self.settings.cache():
                 if not self.paths.rootCacheFilePath().exists():

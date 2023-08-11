@@ -78,7 +78,7 @@ class PluginFinderPaths(SharedPaths):
     
     def pluginDataCachePath(self, pluginId=str):
         """ Gets the location of the current plugin json file. """
-        return self.pluginDataCacheFolderPath() / (str(pluginId) + ".json")
+        return self.pluginDataCacheFolderPath() / f"{str(pluginId)}.json"
 
     _githubReleaseJsonCacheFolderPath = str()
     def githubReleaseJsonCacheFolderPath(self):
@@ -91,7 +91,10 @@ class PluginFinderPaths(SharedPaths):
 
     def githubReleaseJsonCachePath(self, author=str, repo=str, tag=str):
         """ Gets the location of the current plugin json file. """
-        return self.githubReleaseJsonCacheFolderPath() / (str(author) + "_" + repo + "_" + tag + ".json")
+        return (
+            self.githubReleaseJsonCacheFolderPath()
+            / f"{str(author)}_{repo}_{tag}.json"
+        )
 
     def zipExePath(self):
         """ Gets the path to 7za.exe """

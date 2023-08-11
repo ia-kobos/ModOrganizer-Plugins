@@ -41,8 +41,7 @@ class ProfileSync():
     def addSyncGroup(self, groupName=str):
         groups = self.getSyncGroups()
         if groupName not in groups.keys():
-            groups[groupName] = {}
-            groups[groupName]["Profiles"] = []
+            groups[groupName] = {"Profiles": []}
         self.saveSyncGroups(groups)
 
     def removeSyncGroup(self, groupName=str):
@@ -68,7 +67,7 @@ class ProfileSync():
         self.organiser.refresh(True)
         groups = self.getSyncGroups()
         g = self.getProfileGroup(profileName)
-        qInfo("Sync from Profile " + profileName + " to Group " + g)
+        qInfo(f"Sync from Profile {profileName} to Group {g}")
         mods, enabled = self.profileModlist(profileName)
         self.setGroupModlist(g, mods)
 
@@ -82,37 +81,35 @@ class ProfileSync():
     
     def getProfileGroup(self, profileName=str):
         groups = self.getSyncGroups()
-        for g in groups.keys():
-            if profileName in groups[g]["Profiles"]:
-                return g
-        return ""
+        return next(
+            (g for g in groups.keys() if profileName in groups[g]["Profiles"]), ""
+        )
 
     def syncFromCurrent(self):
         profile = self.organiser.profile()
         group = self.getProfileGroup(profile.name())
         if group != "":
-            qInfo("Sync from Profile " + profile.name() + " to Group " + group)
+            qInfo(f"Sync from Profile {profile.name()} to Group {group}")
             mods = self.organiser.modList().allModsByProfilePriority(profile)
-            modNl = []
-            for m in mods:
-                modNl.append(m + "\n")
+            modNl = [m + "\n" for m in mods]
             self.setGroupModlist(group, modNl)
 
     def groupToProfile(self, groupName=str, profileName=str):
-        if groupName != "":
-            qInfo("Sync from Group " + groupName + " to Profile " + profileName)
-            groupList = self.getGroupModlist(groupName)
-            mods, enabled = self.profileModlist(profileName)
-            results = []
-            for mod in groupList:
-                if mod in enabled:
-                    results.append("+" + mod)
-                else:
-                    results.append("-" + mod)
-            results.reverse()
-            path = self.paths.profileModlistPath(profileName)
-            with open(str(path), "w") as w:
-                w.writelines(results)
+        if groupName == "":
+            return
+        qInfo(f"Sync from Group {groupName} to Profile {profileName}")
+        groupList = self.getGroupModlist(groupName)
+        mods, enabled = self.profileModlist(profileName)
+        results = []
+        for mod in groupList:
+            if mod in enabled:
+                results.append(f"+{mod}")
+            else:
+                results.append(f"-{mod}")
+        results.reverse()
+        path = self.paths.profileModlistPath(profileName)
+        with open(str(path), "w") as w:
+            w.writelines(results)
 
     def removeProfileFromGroup(self, groupName=str, profileName=str):
         groups = self.getSyncGroups()

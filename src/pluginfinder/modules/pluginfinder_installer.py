@@ -30,9 +30,10 @@ class PluginFinderInstaller():
             installedFiles[pfId]["LocaleFiles"] = []
             pfFiles = self.files.getFolderFileList(Path(__file__).parent.parent)
             pluginPath = self.paths.modOrganizerPluginPath()
-            relativeFiles = []
-            for filePath in pfFiles:
-                relativeFiles.append(str(self.paths.relativePath(pluginPath, filePath)))
+            relativeFiles = [
+                str(self.paths.relativePath(pluginPath, filePath))
+                for filePath in pfFiles
+            ]
             installedFiles[pfId]["PluginFiles"] = relativeFiles
             self.saveInstalledFiles(installedFiles)
             return True
@@ -42,7 +43,7 @@ class PluginFinderInstaller():
         pluginId = plugin.identifier()
         currentVersion = plugin.current(self.organiser.appVersion().canonicalString())
         downloadUrl = currentVersion.downloadUrl()
-        
+
         installedFiles = self.getInstalledFiles()
         if str(pluginId) not in installedFiles:
             installedFiles[str(pluginId)] = {}
@@ -54,24 +55,24 @@ class PluginFinderInstaller():
             installedFiles[str(pluginId)]["DataFiles"] = []
         installedFiles[str(pluginId)]["Version"] = currentVersion.version()
 
-        qInfo("Downloading from " + downloadUrl)
+        qInfo(f"Downloading from {downloadUrl}")
         urlparts = str(downloadUrl).split(".")
         urlparts.reverse()
         extension = urlparts[0]
-        destPath = str(self.paths.pluginStageTempPath()) + "." + extension
+        destPath = f"{str(self.paths.pluginStageTempPath())}.{extension}"
         urllib.request.urlretrieve(downloadUrl, destPath)
-        
-        qInfo("Extracting " + str(destPath))
+
+        qInfo(f"Extracting {str(destPath)}")
         szExe = str(self.paths.zipExePath())
         dlZip = str(destPath)
         exDir = str(self.paths.pluginStageTempPath())
         exRun = f'"{szExe}" x "{dlZip}" -o"{exDir}" -y'
-        qInfo("Executing command " + str(exRun))
+        qInfo(f"Executing command {str(exRun)}")
         subprocess.call(exRun, shell=True, stdout=open(os.devnull, 'wb'))
 
         for path in currentVersion.pluginPaths():
             sourcePath = str(self.paths.pluginStageTempPath() / str(path))
-            sourceName = str(os.path.basename(str(sourcePath)))
+            sourceName = str(os.path.basename(sourcePath))
             files = []
             if os.path.isfile(sourcePath):
                 files.append(sourcePath)
@@ -81,16 +82,16 @@ class PluginFinderInstaller():
                 try:
                     rel = Path(sourceName) / self.paths.relativePath(sourcePath, source)
                     dest = self.paths.modOrganizerPluginPath() / rel
-                    qInfo("Copying from " + str(source) + " to " + str(dest))
+                    qInfo(f"Copying from {str(source)} to {str(dest)}")
                     self.utilities.moveTo(source, dest)
                     if str(rel) not in installedFiles[str(pluginId)]["PluginFiles"]:
                         installedFiles[str(pluginId)]["PluginFiles"].append(str(rel))
                 except:
-                    qInfo("Could not install " + sourceName)
-                        
+                    qInfo(f"Could not install {sourceName}")
+
         for path in currentVersion.localePaths():
             sourcePath = str(self.paths.pluginStageTempPath() / str(path))
-            sourceName = str(os.path.basename(str(sourcePath)))
+            sourceName = str(os.path.basename(sourcePath))
             files = []
             if os.path.isfile(sourcePath):
                 files.append(sourcePath)
@@ -100,13 +101,13 @@ class PluginFinderInstaller():
                 try:
                     rel = Path(sourceName) / self.paths.relativePath(sourcePath, source)
                     dest = self.paths.modOrganizerLocalePath() / rel
-                    qInfo("Copying from " + str(source) + " to " + str(dest))
+                    qInfo(f"Copying from {str(source)} to {str(dest)}")
                     self.utilities.moveTo(source, dest)
                     if str(rel) not in installedFiles[str(pluginId)]["LocaleFiles"]:
                         installedFiles[str(pluginId)]["LocaleFiles"].append(str(rel))
                 except:
-                    qInfo("Could not install " + sourceName)
-                        
+                    qInfo(f"Could not install {sourceName}")
+
         for path in currentVersion.dataPaths():
             if path not in installedFiles[str(pluginId)]["DataFiles"]:
                 installedFiles[str(pluginId)]["DataFiles"].append(str(path))
@@ -117,8 +118,7 @@ class PluginFinderInstaller():
         
     def getInstalledFiles(self):
         if self.paths.installedPluginDataPath().exists():
-            fileData = json.load(open(self.paths.installedPluginDataPath()))
-            return fileData
+            return json.load(open(self.paths.installedPluginDataPath()))
         return {}
 
     def saveInstalledFiles(self, files):
@@ -129,9 +129,7 @@ class PluginFinderInstaller():
             
     def isInstalled(self, pluginId=str):
         files = self.getInstalledFiles()
-        if str(pluginId) in files:
-            return True
-        return False
+        return str(pluginId) in files
 
     def installedVersion(self, pluginId=str):
         if self.isInstalled(pluginId):
@@ -144,14 +142,14 @@ class PluginFinderInstaller():
     def uninstallPlugin(self, pluginId: str, keepData: bool = False) -> None:
         """ Removes a plugin. """
         files = self.getInstalledFiles()
-        pluginFiles = files[str(pluginId)]
+        pluginFiles = files[pluginId]
 
         self._deleteFiles(pluginFiles["PluginFiles"])
         self._deleteFiles(pluginFiles["LocaleFiles"])
         if not keepData:
             self._deleteFiles(pluginFiles["DataFiles"])
 
-        files.pop(str(pluginId))
+        files.pop(pluginId)
         if pluginId != "pluginfinder":
             self.saveInstalledFiles(files)
 			

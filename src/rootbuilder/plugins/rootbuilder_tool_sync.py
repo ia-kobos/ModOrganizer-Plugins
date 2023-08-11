@@ -25,10 +25,10 @@ class RootBuilderSyncTool(RootBuilderPlugin, mobase.IPluginTool):
         return self.icons.syncIcon()
 
     def name(self):
-        return self.baseName() + " Sync Tool"
+        return f"{self.baseName()} Sync Tool"
 
     def displayName(self):
-        return self.baseDisplayName() + "/Sync"
+        return f"{self.baseDisplayName()}/Sync"
 
     def description(self):
         return self.__tr("Runs a sync operation using current settings.")

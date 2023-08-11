@@ -47,7 +47,7 @@ class CurationClub():
     def sort(self):
         cache = self.readCache()
         files = self.files.creationMetaFiles()
-        qInfo("Found " + str(len(files)) + " meta files.")
+        qInfo(f"Found {len(files)} meta files.")
         sourceMeta = {}
         for meta in files:
             with open(str(meta), "rb") as metaRead:
@@ -61,7 +61,7 @@ class CurationClub():
                 if "Files" not in cache[ccId].keys():
                     cache[ccId]["Files"] = []
                 for match in re.findall(self.fileRegex, metaData):
-                    qInfo(str(metaData))
+                    qInfo(metaData)
                     qInfo("\"" + str(match) + "\"")
                     preName = str(match).split(".")[0]
                     extras = self.files.findba2Files(preName)
@@ -86,21 +86,22 @@ class CurationClub():
                         if not filePath.exists():
                             filePath = Path(self.organiser.overwritePath()) / str(fileName)
                             if not filePath.exists():
-                                modFile = self.files.findFileInMod(str(fileName))
-                                if modFile:
+                                if modFile := self.files.findFileInMod(
+                                    str(fileName)
+                                ):
                                     filePath = Path(modFile)
 
                         if filePath.exists():
                             targetPath = modFolder / str(fileName)
                             if str(filePath) != str(targetPath):
-                                qInfo("Moving" + str(filePath))
+                                qInfo(f"Moving{str(filePath)}")
                                 if not modFolder.exists():
                                     os.mkdir(str(modFolder))
                                 self.utilities.moveTo(filePath, targetPath)
-                    
+
             if "Meta" in data.keys():
                 if self.settings.rootBuilderSupport():
-                    if key in sourceMeta.keys():
+                    if key in sourceMeta:
                         manifestPath = sourceMeta[key]
                         if Path(manifestPath).exists():
                             targetPath = modFolder / "Root" / "Creations" / data["Meta"]
@@ -122,8 +123,7 @@ class CurationClub():
         if self.paths.creationNameCacheFile().exists():
             try:
                 with open(str(self.paths.creationNameCacheFile()), 'r') as r:
-                    data = json.load(r)
-                    return data
+                    return json.load(r)
             except:
                 pass
         return {}

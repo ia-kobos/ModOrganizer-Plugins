@@ -18,7 +18,7 @@ class SharedUtilities():
             os.makedirs(os.path.dirname(toPath), exist_ok=True)
             copy2(fromPath, toPath)
         except:
-            qInfo("Could not copy " + str(fromPath) + " to " + str(toPath))
+            qInfo(f"Could not copy {str(fromPath)} to {str(toPath)}")
 
     def replaceDir(self, fromPath=Path, toPath=Path):
         try:
@@ -26,7 +26,7 @@ class SharedUtilities():
                 shutil.rmtree(toPath)
             shutil.copytree(fromPath, toPath)
         except:
-            qInfo("Could not replace " + str(toPath) + " with " + str(fromPath))
+            qInfo(f"Could not replace {str(toPath)} with {str(fromPath)}")
 
     def deletePath(self, path=Path):
         try:
@@ -34,7 +34,7 @@ class SharedUtilities():
                 os.chmod(path, stat.S_IWRITE)
             os.remove(path)
         except:
-            qInfo("Could not delete " + str(path))
+            qInfo(f"Could not delete {str(path)}")
 
     def moveTo(self, fromPath=Path, toPath=Path):
         try:
@@ -43,7 +43,7 @@ class SharedUtilities():
             os.makedirs(os.path.dirname(toPath), exist_ok=True)
             shutil.move(str(fromPath), str(toPath))
         except:
-            qInfo("Could not move " + str(fromPath) + " to " + str(toPath))
+            qInfo(f"Could not move {str(fromPath)} to {str(toPath)}")
 
     def hashFile(self, path):
         """ Hashes a file and returns the hash """
@@ -71,19 +71,10 @@ class SharedUtilities():
     rcStrings = [ "g", "rc", "candidate" ]
 
     def betaVersion(self, version=str):
-        for bs in self.betaStrings:
-            if bs in str(version).lower():
-                return True
-        return False
+        return any(bs in str(version).lower() for bs in self.betaStrings)
 
     def alphaVersion(self, version=str):
-        for asS in self.alphaStrings:
-            if asS in str(version).lower():
-                return True
-        return False
+        return any(asS in str(version).lower() for asS in self.alphaStrings)
 
     def rcVersion(self, version=str):
-        for rs in self.rcStrings:
-            if rs in str(version).lower():
-                return True
-        return False
+        return any(rs in str(version).lower() for rs in self.rcStrings)

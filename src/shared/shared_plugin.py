@@ -59,5 +59,7 @@ class SharedPlugin():
     def settings(self):
         """ Current list of game settings for Mod Organizer. """
         return [
-            mobase.PluginSetting("enabled",self.__tr("Enables " + self.pluginName),True)
-            ]
+            mobase.PluginSetting(
+                "enabled", self.__tr(f"Enables {self.pluginName}"), True
+            )
+        ]

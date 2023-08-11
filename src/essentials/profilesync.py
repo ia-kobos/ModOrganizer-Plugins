@@ -10,4 +10,4 @@ class ProfileSyncEssentials(ProfileSyncManageTool):
         return super().init(organiser)
 
     def displayName(self):
-        return "Essentials/" + self.baseDisplayName()
+        return f"Essentials/{self.baseDisplayName()}"

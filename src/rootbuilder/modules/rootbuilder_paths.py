@@ -72,7 +72,12 @@ class RootBuilderPaths(SharedPaths):
 
     def rootRelativePath(self, path):
         """ Gets the part of a path relative to the Root folder. """
-        return Path(str(path)[(str(os.path.abspath(Path(path))).lower().find(os.path.sep + "root") + 6):])
+        return Path(
+            str(path)[
+                str(os.path.abspath(Path(path))).lower().find(f"{os.path.sep}root")
+                + 6 :
+            ]
+        )
 
     def rootCacheFilePathAllVersions(self):
         """ Gets all cache files for all versions of the game. """

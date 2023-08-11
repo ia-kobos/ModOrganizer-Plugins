@@ -14,9 +14,7 @@ def createPlugins():
 
     rbInit = pluginDir / "rootbuilder" / "__init__.py"
     if not rbInit.exists():
-        plugins.append(RootBuilderEssentials())
-        plugins.append(RootBuilderMapperEssentials())
-
+        plugins.extend((RootBuilderEssentials(), RootBuilderMapperEssentials()))
     riInit = pluginDir / "reinstaller" / "__init__.py"
     if not riInit.exists():
         plugins.append(ReinstallerEssentials())

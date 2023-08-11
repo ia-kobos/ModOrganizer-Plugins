@@ -91,8 +91,7 @@ class PluginFinderBrowser(PluginFinderPlugin, mobase.IPluginTool):
         data, pages = self.pluginfinder.search.pagedPluginData(self.searchText.text(), self.installedCheck.isChecked(), self.page, self.pageSize)
         if self.page > pages:
             self.page = pages
-            if self.page < 1:
-                self.page = 1
+            self.page = max(self.page, 1)
             data, pages = self.pluginfinder.search.pagedPluginData(self.searchText.text(), self.installedCheck.isChecked(), self.page, self.pageSize)
 
         self.clearResults()
@@ -101,10 +100,10 @@ class PluginFinderBrowser(PluginFinderPlugin, mobase.IPluginTool):
             self.resultsLayout.addWidget(self.getPluginSeparator())
 
         missing = 7 - len(data)
-        for i in range(missing):
+        for _ in range(missing):
             self.resultsLayout.addWidget(self.getEmptyPluginWidget())
             self.resultsLayout.addWidget(self.getPluginSeparator())
-            
+
         self.prevButton.setEnabled(self.page != 1)
         self.nextButton.setEnabled(self.page < pages)
     
@@ -128,7 +127,7 @@ class PluginFinderBrowser(PluginFinderPlugin, mobase.IPluginTool):
             tkExe = "C:/Windows/system32/taskkill.exe"
             moExe = str(self.pluginfinder.paths.modOrganizerExePath())
             moKill = f'"{tkExe}" /F /IM ModOrganizer.exe && explorer "{moExe}"'
-            qInfo("Executing command " + str(moKill))
+            qInfo(f"Executing command {str(moKill)}")
             subprocess.call(moKill, shell=True, stdout=open(os.devnull, 'wb'))
 
     def getDialog(self):

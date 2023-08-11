@@ -37,16 +37,13 @@ class SharedFiles():
         return res
 
     def getFileNamesFromList(self, list):
-        files = []
-        for item in list:
-            files.append(os.path.basename(str(item)))
-        return files
+        return [os.path.basename(str(item)) for item in list]
 
     
     def modOrganizerExecutables(self):
         """ Gets the list of executables from Mod Organizer. """
-        titles = []
-        for executable in self.organiser.managedGame().executables():
-            titles.append(executable.title())
-        return titles
+        return [
+            executable.title()
+            for executable in self.organiser.managedGame().executables()
+        ]
 

@@ -86,7 +86,7 @@ class RootBuilderFiles(SharedFiles):
                 if relativePath in modFiles:
                     modFiles[relativePath] = file
                 else:
-                    modFiles.update({str(relativePath):str(file)})
+                    modFiles[str(relativePath)] = str(file)
         # Do the same for the root overwrite folder.
         if self.paths.rootOverwritePath().exists():
             for file in self.getFolderFileList(self.paths.rootOverwritePath()):
@@ -95,7 +95,7 @@ class RootBuilderFiles(SharedFiles):
                 if relativePath in modFiles:
                     modFiles[relativePath] = file
                 else:
-                    modFiles.update({str(relativePath):str(file)})
+                    modFiles[str(relativePath)] = str(file)
         return list(modFiles.values())
 
     def getLinkableModFiles(self):
@@ -108,7 +108,7 @@ class RootBuilderFiles(SharedFiles):
             exclude = True
             # Loop through the linkable extensions and look for a match.
             for ex in self.settings.linkextensions():
-                if (str(file)).endswith("." + ex):
+                if (str(file)).endswith(f".{ex}"):
                     exclude = False
             if exclude == False:
                 linkableFiles.append(file)

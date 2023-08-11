@@ -92,10 +92,7 @@ class ProfileSyncManageTool(ProfileSyncPlugin, mobase.IPluginTool):
             if p.checkState() == QtCore.Qt.Checked:
                 selected.append(p.text())
         for item in items:
-            enabled = False
-            for select in selected:
-                if select == item:
-                    enabled = True
+            enabled = item in selected
             if enabled:
                 self.profilesync.addProfileToGroup(self.syncSelect.currentText(), item)
             else:

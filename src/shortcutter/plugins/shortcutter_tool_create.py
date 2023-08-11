@@ -67,7 +67,9 @@ class ShortcutterCreateTool(ShortcutterPlugin, mobase.IPluginTool):
         self.selectChange()
 
     def selectChange(self):
-        self.nameText.setText(self.profileSelect.currentText() + " - " + self.appSelect.currentText())
+        self.nameText.setText(
+            f"{self.profileSelect.currentText()} - {self.appSelect.currentText()}"
+        )
         appPaths = self.shortcutter.paths.modOrganizerAppPaths()
         if self.appSelect.currentText() in appPaths:
             iconPath = str(appPaths[self.appSelect.currentText()])

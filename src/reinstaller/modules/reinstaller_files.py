@@ -18,25 +18,24 @@ class ReinstallerFiles(SharedFiles):
 
     def getDownloadFileOptions(self):
         downloadFiles = self.getFolderFileList(self.paths.downloadsPath())
-        modFiles = []
-        for file in downloadFiles:
-            if not str(file).endswith('.meta') and not str(file).endswith('.unfinished'):
-                modFiles.append(str(os.path.basename(file)))
-        return modFiles
+        return [
+            str(os.path.basename(file))
+            for file in downloadFiles
+            if not str(file).endswith('.meta')
+            and not str(file).endswith('.unfinished')
+        ]
 
     metaRegex = r"^modName=(.+)$"
     def getDownloadFileName(self, downloadName=str):
         defaultName = str(downloadName).split("_")[0].split("-")[0].split(".")[0].strip()
-        metaPath = str(self.paths.downloadsPath() / (str(downloadName) + ".meta"))
+        metaPath = str(self.paths.downloadsPath() / f"{str(downloadName)}.meta")
         if Path(metaPath).exists():
             try:
-                metaFile = open(metaPath, "r")
-                metaText = metaFile.read()
-                metaFile.close()
-                matches = re.search(self.metaRegex, metaText, re.MULTILINE)
-                if matches:
-                    grp = str(matches.group(1))
-                    if grp and len(grp) > 0:
+                with open(metaPath, "r") as metaFile:
+                    metaText = metaFile.read()
+                if matches := re.search(self.metaRegex, metaText, re.MULTILINE):
+                    grp = str(matches[1])
+                    if grp and grp != "":
                         return grp
             except:
                 return defaultName
@@ -44,15 +43,8 @@ class ReinstallerFiles(SharedFiles):
     
     def getInstallerOptions(self):
         installers = self.getSubFolderList(self.paths.pluginDataPath())
-        names = []
-        for folder in installers:
-            names.append(os.path.basename(folder))
-        return names
+        return [os.path.basename(folder) for folder in installers]
 
     def getInstallerFileOptions(self, name):
         installerOpts = self.getFolderFileList(self.paths.pluginDataPath() / name)
-        files = []
-        for file in installerOpts:
-            if not str(file).endswith('.meta'):
-                files.append(str(file))
-        return files
+        return [str(file) for file in installerOpts if not str(file).endswith('.meta')]
